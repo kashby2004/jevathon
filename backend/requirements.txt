@@ -1,0 +1,4 @@
+typesafe-sdk
+requests
+python-dotenv
+truststore
