@@ -29,7 +29,7 @@ The orchestrator agent is **Jev**. It *proposes* and routes. Humans make the fin
 | **Proton** | Developer communications layer | Messages devs, sends dev surveys/questions, sends documentation, collects status updates. Human-in-the-loop (HIL) touchpoint. |
 | **CodeRabbit** | Code review / issue intake | Ranks incoming issues by severity + topic. Reviews PRs. Browserbase interacts with its UI. |
 | **Browserbase** | Headless browser automation | Scrapes internal docs and external research; clicks through the CodeRabbit UI. |
-| **GMI** | **[UNCLEAR]** Listed with the sponsor/tool stack | Possibly GMI Cloud (model inference). Confirm. |
+| **GMI** | GMI Cloud model inference | Serves Claude Sonnet via its OpenAI-compatible API; Stagehand calls it through `backend/gmi_llm.py`. |
 | **Ralph loop** | Iterative agent loop | Jev repeatedly attempts "best steps" with a confidence score until done or below threshold. |
 | **HIL** | Human in the loop | Required at dev confirmation and final PR review. |
 
@@ -126,7 +126,7 @@ Written in the top-left corner (appears to be judging criteria):
 
 ## 9. Open Questions
 
-1. What is **GMI**'s role in the stack?
+1. ~~What is **GMI**'s role in the stack?~~ Resolved: GMI Cloud serves Claude Sonnet.
 2. Exact confidence threshold for escalation: 80% or 90%?
 3. Step 4 outcome text ("nogs in / dev"): what happens if the dev declines? Presumably Jev re-proposes the next candidate.
 4. Are non-severe issues handled at all, or only logged?
