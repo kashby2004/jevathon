@@ -32,9 +32,7 @@ def severity_question(severity_levels: dict) -> Score:
     return Score(
         instructions=(
             "How severe is the production incident described in `issue` and `context`? "
-            "Judge by actual customer and business impact (how many users, data loss, "
-            "security, revenue, whether a workaround exists), not by how alarming the "
-            "wording sounds."
+            "Judge by actual customer and business impact (how many users, data loss, security, revenue, whether a workaround exists), not by how alarming the wording sounds."
         ),
         criteria=[f"{level} - {severity_levels[level]}" for level in LEVELS],
     )
