@@ -26,7 +26,7 @@ from typesafe_sdk import Noul, TypeSafeClient
 
 load_dotenv()
 
-BASE_DIR = Path(__file__).parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 TICKETS_PATH = BASE_DIR / "data" / "prod_issues.json"
 CATALOG_PATH = BASE_DIR / "data" / "research_topics.json"
 OUTPUT_PATH = BASE_DIR / "output" / "research_topics.json"

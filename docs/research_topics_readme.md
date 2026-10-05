@@ -1,5 +1,7 @@
 # Research Topics for On-Call Issues (Jev)
 
+> The app's research stage (`backend/app/stages/research.py`) now uses this catalog: Jev picks up to 3 topics per issue, and Browserbase searches each one.
+
 For each on-call ticket, Jev suggests which **research topics** are worth investigating. The resulting list is meant to be passed to another LLM for the actual research.
 
 ## How it works
@@ -10,7 +12,7 @@ Jev doesn't generate free text. It returns typed judgments. So we use TypeSafe's
    - `id`: used by code
    - `question`: the yes/no judgment Jev makes about the ticket
    - `topic`: the text that goes in the output; `{service}` is filled from the ticket
-2. For each ticket, `backend/research_topics.py` sends Jev **only `issue` and `context`** (never the severity label). It asks one **Noul** (probability of yes) per topic, all 26 in a **single request**; they're evaluated in parallel.
+2. For each ticket, `backend/scripts/research_topics.py` sends Jev **only `issue` and `context`** (never the severity label). It asks one **Noul** (probability of yes) per topic, all 26 in a **single request**; they're evaluated in parallel.
 3. Topics with probability ≥ 0.5 are kept, sorted by probability, and capped at 6.
 
 The team can add, remove, or reword topics by editing the JSON catalog; no code changes are needed.
@@ -22,9 +24,9 @@ The team can add, remove, or reword topics by editing the JSON catalog; no code 
 ```sh
 cd backend
 export TYPESAFE_API_KEY=...          # or use backend/.env
-.venv/bin/python research_topics.py                        # all tickets
-.venv/bin/python research_topics.py INC-1001 INC-1003      # specific tickets
-.venv/bin/python research_topics.py --threshold 0.6 --max 5
+.venv/bin/python scripts/research_topics.py                        # all tickets
+.venv/bin/python scripts/research_topics.py INC-1001 INC-1003      # specific tickets
+.venv/bin/python scripts/research_topics.py --threshold 0.6 --max 5
 ```
 
 Results print to the terminal and are saved to `backend/output/research_topics.json` (gitignored), ready to send to the other LLM:

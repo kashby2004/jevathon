@@ -10,13 +10,13 @@ This README covers what has been built so far, how to run it, and what the first
 
 ```
 backend/
-  jev_client.py          # Minimal examples of calling Jev (SDK + raw HTTP)
-  severity_eval.py       # Rates every ticket's severity with Jev and scores the results
-  research_topics.py     # Picks relevant research topics per ticket with Jev
+  scripts/jev_client.py       # Minimal examples of calling Jev (SDK + raw HTTP)
+  scripts/severity_eval.py    # Rates every ticket's severity with Jev and scores the results
+  scripts/research_topics.py  # Picks relevant research topics per ticket with Jev
   data/prod_issues.json  # 32 labeled, synthetic production incidents
   data/research_topics.json  # Editable catalog of 26 candidate research topics
   output/                # Generated results (gitignored)
-  requirements.txt       # typesafe-sdk, requests, python-dotenv, truststore
+  pyproject.toml         # install with: pip install -e '.[scripts]'
   .env.example           # Template for the API key
 frontend/                # React + Vite + Tailwind app (not yet wired to the backend)
 skills/typesafe-ai/      # Claude Code skill with TypeSafe/Jev guidance
@@ -101,17 +101,17 @@ See [`research_topics_readme.md`](research_topics_readme.md) for full details an
 ```sh
 cd backend
 python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
+.venv/bin/pip install -e '.[scripts]'
 
 # Provide your key; never commit it
 cp .env.example .env          # then edit .env
 # or: export TYPESAFE_API_KEY=...
 
-.venv/bin/python jev_client.py "I was charged twice. Please fix this ASAP."
-.venv/bin/python severity_eval.py                 # uses data/prod_issues.json
-.venv/bin/python severity_eval.py my_tickets.json # or your own file
-.venv/bin/python research_topics.py               # research topics for all tickets
-.venv/bin/python research_topics.py INC-1001 --threshold 0.6 --max 5
+.venv/bin/python scripts/jev_client.py "I was charged twice. Please fix this ASAP."
+.venv/bin/python scripts/severity_eval.py                 # uses data/prod_issues.json
+.venv/bin/python scripts/severity_eval.py my_tickets.json # or your own file
+.venv/bin/python scripts/research_topics.py               # research topics for all tickets
+.venv/bin/python scripts/research_topics.py INC-1001 --threshold 0.6 --max 5
 ```
 
 Both scripts make one API call per ticket. A severity call uses about 400 tokens; a research-topics call contains 26 Noul questions.

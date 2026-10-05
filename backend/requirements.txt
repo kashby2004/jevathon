@@ -1,5 +1,0 @@
-typesafe-sdk
-requests
-python-dotenv
-truststore
-stagehand>=4.1,<5

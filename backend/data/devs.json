@@ -1,0 +1,6 @@
+[
+  {"id": "ana", "name": "Ana", "phone": "+15550100001", "github": "ana-dev", "skills": ["backend", "data", "auth"], "reviewer": true, "mood": "focused"},
+  {"id": "ben", "name": "Ben", "phone": "+15550100002", "github": "ben-dev", "skills": ["frontend", "design systems"], "mood": "tired"},
+  {"id": "chi", "name": "Chi", "phone": "+15550100003", "github": "chi-dev", "skills": ["infra", "ci/cd", "backend"], "reviewer": true, "mood": "good"},
+  {"id": "dev", "name": "Dev", "phone": "+15550100004", "github": "dev-dev", "skills": ["frontend", "backend"], "on_shift": false}
+]

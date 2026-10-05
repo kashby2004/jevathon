@@ -23,7 +23,7 @@ from typesafe_sdk import Score, TypeSafeClient
 
 load_dotenv()
 
-DATA_PATH = Path(__file__).parent / "data" / "prod_issues.json"
+DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "prod_issues.json"
 # Score levels go from lowest to highest, so index 0 = SEV4 and index 3 = SEV1.
 LEVELS = ["SEV4", "SEV3", "SEV2", "SEV1"]
 
