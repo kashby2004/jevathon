@@ -1,0 +1,9 @@
+node_modules
+.env
+.env.local
+dist
+*.log
+.DS_Store
+.probe.ts
+.agents/
+skills-lock.json

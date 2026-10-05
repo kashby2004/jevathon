@@ -1,0 +1,490 @@
+{
+  "severity_levels": {
+    "SEV1": "Critical: full outage, data loss, or security breach affecting many customers; immediate revenue or safety impact; no workaround.",
+    "SEV2": "High: a major feature is down or badly degraded for many users, or a key customer is blocked; workaround is weak or missing.",
+    "SEV3": "Medium: partial degradation affecting a limited set of users, or a reasonable workaround exists; can be fixed within business days.",
+    "SEV4": "Low: cosmetic, internal-only, or a single user with an easy workaround; no meaningful customer impact."
+  },
+  "tickets": [
+    {
+      "id": "INC-1001",
+      "issue": "Checkout returns HTTP 500 for all users",
+      "context": {
+        "service": "payments-api",
+        "environment": "production",
+        "affected_users": "~100% of checkout attempts across all regions",
+        "metrics": "error rate 98%, orders/min dropped from 1,200 to 15",
+        "started": "14 minutes ago, right after deploy v4.82.0",
+        "workaround": "none",
+        "reporter": "PagerDuty alert",
+        "details": "Stack traces show NullPointerException in TaxCalculator. Rollback not yet attempted."
+      },
+      "severity": "SEV1"
+    },
+    {
+      "id": "INC-1002",
+      "issue": "Primary database cluster unreachable",
+      "context": {
+        "service": "postgres-main (us-east-1)",
+        "environment": "production",
+        "affected_users": "all customers; every API that writes data is failing",
+        "metrics": "connection errors 100%, replica promotion failed",
+        "started": "6 minutes ago",
+        "workaround": "none; read replicas are also lagging 40 minutes",
+        "reporter": "Datadog monitor + multiple customer tweets",
+        "details": "AWS reports degraded EBS volumes in one AZ. Automatic failover did not complete."
+      },
+      "severity": "SEV1"
+    },
+    {
+      "id": "INC-1003",
+      "issue": "Customer PII visible to other tenants",
+      "context": {
+        "service": "tenant-dashboard",
+        "environment": "production",
+        "affected_users": "unknown; at least 3 enterprise tenants reported seeing other companies' contact lists",
+        "metrics": "cache hit ratio normal",
+        "started": "reported 25 minutes ago, may have started 2 hours ago with a caching change",
+        "workaround": "none confirmed",
+        "reporter": "Enterprise customer support escalation",
+        "details": "Suspected cache key missing tenant_id after refactor. Legal and security not yet notified."
+      },
+      "severity": "SEV1"
+    },
+    {
+      "id": "INC-1004",
+      "issue": "Login fails for every user",
+      "context": {
+        "service": "auth-service / SSO",
+        "environment": "production",
+        "affected_users": "all users on web and mobile",
+        "metrics": "login success rate 0% for 10 minutes",
+        "started": "10 minutes ago",
+        "workaround": "users with existing sessions can continue; no new logins possible",
+        "reporter": "Synthetic monitor",
+        "details": "Signing certificate for JWT tokens expired at 00:00 UTC. Certificate renewal job failed silently last week."
+      },
+      "severity": "SEV1"
+    },
+    {
+      "id": "INC-1005",
+      "issue": "Ransomware note found on file storage server",
+      "context": {
+        "service": "shared-file-storage",
+        "environment": "production",
+        "affected_users": "all customers who upload documents",
+        "metrics": "thousands of files renamed with .locked extension",
+        "started": "detected 5 minutes ago",
+        "workaround": "none",
+        "reporter": "Security operations center",
+        "details": "Files are being encrypted in real time. Origin of the intrusion unknown."
+      },
+      "severity": "SEV1"
+    },
+    {
+      "id": "INC-1006",
+      "issue": "Minor blip on dashboard, probably nothing",
+      "context": {
+        "service": "billing-ledger",
+        "environment": "production",
+        "affected_users": "all customers invoiced today",
+        "metrics": "duplicate charge records: 18,400 in the last hour",
+        "started": "about 1 hour ago",
+        "workaround": "none; charges are already being sent to card processors",
+        "reporter": "Junior engineer noticed in Grafana",
+        "details": "Retry logic is re-sending charge requests that already succeeded. Customers are being double-billed."
+      },
+      "severity": "SEV1"
+    },
+    {
+      "id": "INC-1007",
+      "issue": "Entire website down in EU region",
+      "context": {
+        "service": "edge / CDN",
+        "environment": "production",
+        "affected_users": "all EU customers (~40% of traffic)",
+        "metrics": "HTTP 503 from CDN edge for 100% of EU requests",
+        "started": "8 minutes ago",
+        "workaround": "none; DNS failover to US is not configured",
+        "reporter": "Customer reports + status page monitor",
+        "details": "CDN provider rolled out a bad WAF rule set."
+      },
+      "severity": "SEV1"
+    },
+    {
+      "id": "INC-1008",
+      "issue": "Background job deleting active customer accounts",
+      "context": {
+        "service": "account-cleanup-cron",
+        "environment": "production",
+        "affected_users": "2,300 active accounts deleted so far, count increasing",
+        "metrics": "delete rate ~40 accounts/minute",
+        "started": "1 hour ago",
+        "workaround": "job can be disabled, but deleted data restore requires backups",
+        "reporter": "Customer support ticket spike",
+        "details": "Inactivity filter compares dates in wrong timezone format, treating active accounts as inactive."
+      },
+      "severity": "SEV1"
+    },
+    {
+      "id": "INC-1009",
+      "issue": "Search results are slow",
+      "context": {
+        "service": "search-api (Elasticsearch)",
+        "environment": "production",
+        "affected_users": "all users performing search (~30% of sessions)",
+        "metrics": "p95 latency 9s (normally 300ms), 12% timeouts",
+        "started": "45 minutes ago",
+        "workaround": "users can browse categories instead of searching",
+        "reporter": "Latency alert",
+        "details": "One Elasticsearch node has a full disk and shards are relocating."
+      },
+      "severity": "SEV2"
+    },
+    {
+      "id": "INC-1010",
+      "issue": "Largest enterprise customer cannot export reports",
+      "context": {
+        "service": "reporting-service",
+        "environment": "production",
+        "affected_users": "one enterprise customer (18% of annual revenue), 400 of their users",
+        "metrics": "export job failure rate 100% for this tenant",
+        "started": "this morning",
+        "workaround": "none; their quarterly board meeting is tomorrow",
+        "reporter": "Customer success manager escalation",
+        "details": "Their dataset exceeded a 2GB memory limit introduced last release."
+      },
+      "severity": "SEV2"
+    },
+    {
+      "id": "INC-1011",
+      "issue": "Push notifications not delivered on iOS",
+      "context": {
+        "service": "notification-service",
+        "environment": "production",
+        "affected_users": "all iOS users (~55% of mobile users)",
+        "metrics": "APNs delivery success 0%",
+        "started": "3 hours ago",
+        "workaround": "in-app inbox still shows notifications; email alerts still sent",
+        "reporter": "App store reviews and support tickets",
+        "details": "APNs auth key was rotated but the new key was not deployed."
+      },
+      "severity": "SEV2"
+    },
+    {
+      "id": "INC-1012",
+      "issue": "Order confirmation emails delayed",
+      "context": {
+        "service": "email-queue (SQS + worker)",
+        "environment": "production",
+        "affected_users": "all customers placing orders",
+        "metrics": "queue backlog 250,000 messages, oldest message 2.5 hours",
+        "started": "2.5 hours ago",
+        "workaround": "orders are still placed successfully and visible in account page",
+        "reporter": "Queue depth alert",
+        "details": "Workers crashing due to malformed template variable; auto-scaling keeps restarting them."
+      },
+      "severity": "SEV2"
+    },
+    {
+      "id": "INC-1013",
+      "issue": "Payment failures for Mastercard users",
+      "context": {
+        "service": "payments-api",
+        "environment": "production",
+        "affected_users": "customers paying with Mastercard (~30% of transactions)",
+        "metrics": "Mastercard auth failure rate 70%",
+        "started": "30 minutes ago",
+        "workaround": "Visa, PayPal, and Apple Pay work",
+        "reporter": "Payment processor dashboard alert",
+        "details": "Processor reports issue on their side with a specific acquiring bank route."
+      },
+      "severity": "SEV2"
+    },
+    {
+      "id": "INC-1014",
+      "issue": "API rate limiter rejecting legitimate traffic",
+      "context": {
+        "service": "api-gateway",
+        "environment": "production",
+        "affected_users": "~25% of integration partners receiving 429 errors",
+        "metrics": "429 responses up 30x",
+        "started": "1 hour ago",
+        "workaround": "partners can retry with backoff but many syncs are failing",
+        "reporter": "Partner support channel",
+        "details": "New rate-limit config counted requests per IP instead of per API key; partners behind shared NAT affected."
+      },
+      "severity": "SEV2"
+    },
+    {
+      "id": "INC-1015",
+      "issue": "Mobile app crashes on launch for Android 14",
+      "context": {
+        "service": "android-app v6.2.0",
+        "environment": "production",
+        "affected_users": "Android 14 users who updated (~20% of Android base)",
+        "metrics": "crash-free sessions dropped from 99.6% to 81%",
+        "started": "since release 6 hours ago",
+        "workaround": "web app works; users can't downgrade easily",
+        "reporter": "Crashlytics alert",
+        "details": "Staged rollout at 50%. Crash in new camera permission code."
+      },
+      "severity": "SEV2"
+    },
+    {
+      "id": "INC-1016",
+      "issue": "Data warehouse sync stopped",
+      "context": {
+        "service": "etl-pipeline (Airflow)",
+        "environment": "production",
+        "affected_users": "customer-facing analytics dashboards show data 18 hours stale for all customers",
+        "metrics": "0 successful DAG runs since yesterday",
+        "started": "18 hours ago",
+        "workaround": "raw data is intact; dashboards just outdated",
+        "reporter": "Customer complaints about wrong numbers",
+        "details": "Upstream schema change added a non-nullable column."
+      },
+      "severity": "SEV2"
+    },
+    {
+      "id": "INC-1017",
+      "issue": "URGENT!!! Profile pictures not loading!!!",
+      "context": {
+        "service": "image-service",
+        "environment": "production",
+        "affected_users": "users whose avatars were uploaded before 2019 (~4% of users)",
+        "metrics": "404s on legacy image bucket paths",
+        "started": "yesterday",
+        "workaround": "default avatar shown; users can re-upload",
+        "reporter": "Customer via chat, very upset",
+        "details": "Legacy bucket lifecycle policy moved old files to cold storage."
+      },
+      "severity": "SEV3"
+    },
+    {
+      "id": "INC-1018",
+      "issue": "CSV import fails for files over 50MB",
+      "context": {
+        "service": "import-service",
+        "environment": "production",
+        "affected_users": "a handful of customers per week with large imports",
+        "metrics": "3 failed imports in the last 7 days",
+        "started": "unknown, reported today",
+        "workaround": "split file into smaller chunks",
+        "reporter": "Support ticket",
+        "details": "Upload proxy has a 50MB body limit."
+      },
+      "severity": "SEV3"
+    },
+    {
+      "id": "INC-1019",
+      "issue": "Elevated latency on reports page",
+      "context": {
+        "service": "reporting-service",
+        "environment": "production",
+        "affected_users": "users loading reports with more than 1 year of data",
+        "metrics": "p95 latency 4s (normally 1.5s), no errors",
+        "started": "2 days ago",
+        "workaround": "narrower date range loads quickly",
+        "reporter": "Performance regression alert",
+        "details": "Missing index after a migration."
+      },
+      "severity": "SEV3"
+    },
+    {
+      "id": "INC-1020",
+      "issue": "Staging environment down",
+      "context": {
+        "service": "staging cluster",
+        "environment": "staging",
+        "affected_users": "internal engineers; QA blocked on release testing",
+        "metrics": "all staging pods CrashLoopBackOff",
+        "started": "4 hours ago",
+        "workaround": "engineers can test locally; next release is in 3 days",
+        "reporter": "QA team Slack",
+        "details": "Expired secret in staging vault."
+      },
+      "severity": "SEV3"
+    },
+    {
+      "id": "INC-1021",
+      "issue": "Webhook retries delayed for some partners",
+      "context": {
+        "service": "webhook-dispatcher",
+        "environment": "production",
+        "affected_users": "partners whose endpoints returned errors (~2% of deliveries)",
+        "metrics": "retry delay 45 minutes instead of 5",
+        "started": "since Monday",
+        "workaround": "first delivery attempts unaffected; partners can poll the API",
+        "reporter": "Partner email",
+        "details": "Retry backoff multiplier misconfigured."
+      },
+      "severity": "SEV3"
+    },
+    {
+      "id": "INC-1022",
+      "issue": "Critical error: Saturday 3 AM disk alert on log server",
+      "context": {
+        "service": "log-aggregator",
+        "environment": "production",
+        "affected_users": "none directly; log retention may drop to 3 days",
+        "metrics": "disk usage 88%, growing 1% per day",
+        "started": "alert fired 20 minutes ago",
+        "workaround": "old logs can be archived to S3 Monday",
+        "reporter": "Automated disk alert",
+        "details": "Log volume increased after debug logging was left on in one service."
+      },
+      "severity": "SEV3"
+    },
+    {
+      "id": "INC-1023",
+      "issue": "Invoice PDF shows wrong currency symbol for CAD",
+      "context": {
+        "service": "invoice-generator",
+        "environment": "production",
+        "affected_users": "Canadian customers (~3% of invoices)",
+        "metrics": "amounts are correct, only symbol shows $ instead of CA$",
+        "started": "last release, 5 days ago",
+        "workaround": "customers can view correct currency in the web portal",
+        "reporter": "Accounting team at a customer",
+        "details": "Locale formatting library default changed."
+      },
+      "severity": "SEV3"
+    },
+    {
+      "id": "INC-1024",
+      "issue": "SSO login fails for one mid-size customer",
+      "context": {
+        "service": "auth-service / SAML",
+        "environment": "production",
+        "affected_users": "one customer, 60 users",
+        "metrics": "SAML assertion validation errors for this tenant",
+        "started": "this morning",
+        "workaround": "users can log in with email + password fallback",
+        "reporter": "Customer IT admin",
+        "details": "Customer rotated their IdP certificate without updating it in our settings."
+      },
+      "severity": "SEV3"
+    },
+    {
+      "id": "INC-1025",
+      "issue": "Typo on pricing page",
+      "context": {
+        "service": "marketing-website",
+        "environment": "production",
+        "affected_users": "website visitors",
+        "metrics": "n/a",
+        "started": "unknown",
+        "workaround": "n/a",
+        "reporter": "Marketing team",
+        "details": "'Anual' instead of 'Annual' in the plan comparison table. Prices are correct."
+      },
+      "severity": "SEV4"
+    },
+    {
+      "id": "INC-1026",
+      "issue": "Internal admin tool dark mode colors unreadable",
+      "context": {
+        "service": "admin-console",
+        "environment": "production (internal only)",
+        "affected_users": "a few support agents who use dark mode",
+        "metrics": "n/a",
+        "started": "after last week's CSS update",
+        "workaround": "switch to light mode",
+        "reporter": "Support agent",
+        "details": "Contrast issue on table headers."
+      },
+      "severity": "SEV4"
+    },
+    {
+      "id": "INC-1027",
+      "issue": "One user can't reset password",
+      "context": {
+        "service": "auth-service",
+        "environment": "production",
+        "affected_users": "1 user",
+        "metrics": "password reset success rate 99.9% overall",
+        "started": "today",
+        "workaround": "support can send manual reset link",
+        "reporter": "Support ticket",
+        "details": "User's corporate email filter is blocking our reset emails."
+      },
+      "severity": "SEV4"
+    },
+    {
+      "id": "INC-1028",
+      "issue": "Flaky integration test in CI",
+      "context": {
+        "service": "ci-pipeline",
+        "environment": "CI",
+        "affected_users": "engineers; occasional re-runs needed",
+        "metrics": "test fails ~5% of runs",
+        "started": "2 weeks ago",
+        "workaround": "re-run the job",
+        "reporter": "Engineer",
+        "details": "Race condition in test setup, not production code."
+      },
+      "severity": "SEV4"
+    },
+    {
+      "id": "INC-1029",
+      "issue": "EVERYTHING IS BROKEN - tooltip misaligned",
+      "context": {
+        "service": "web-frontend",
+        "environment": "production",
+        "affected_users": "users hovering the help icon on settings page in Safari",
+        "metrics": "n/a",
+        "started": "unknown",
+        "workaround": "tooltip text still readable",
+        "reporter": "Customer email",
+        "details": "Tooltip renders 10px to the left on Safari 17."
+      },
+      "severity": "SEV4"
+    },
+    {
+      "id": "INC-1030",
+      "issue": "Deprecation warnings in application logs",
+      "context": {
+        "service": "orders-service",
+        "environment": "production",
+        "affected_users": "none",
+        "metrics": "~2,000 warning lines per hour",
+        "started": "after library upgrade",
+        "workaround": "n/a, functionality unaffected",
+        "reporter": "Engineer reviewing logs",
+        "details": "Library will remove the deprecated API in 6 months."
+      },
+      "severity": "SEV4"
+    },
+    {
+      "id": "INC-1031",
+      "issue": "Feature request: add export to Excel",
+      "context": {
+        "service": "reporting-service",
+        "environment": "production",
+        "affected_users": "several customers requested it",
+        "metrics": "n/a",
+        "started": "n/a",
+        "workaround": "CSV export exists and opens in Excel",
+        "reporter": "Product feedback form",
+        "details": "Filed in the incident queue by mistake."
+      },
+      "severity": "SEV4"
+    },
+    {
+      "id": "INC-1032",
+      "issue": "Status page footer shows last year's copyright",
+      "context": {
+        "service": "status-page",
+        "environment": "production",
+        "affected_users": "status page visitors",
+        "metrics": "n/a",
+        "started": "January",
+        "workaround": "n/a",
+        "reporter": "Employee",
+        "details": "Hardcoded year in footer template."
+      },
+      "severity": "SEV4"
+    }
+  ]
+}

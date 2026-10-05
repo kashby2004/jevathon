@@ -1,0 +1,31 @@
+{
+  "_note": "Candidate research topics. Jev judges which apply to a ticket; {service} is filled from the ticket's context. Edit freely.",
+  "topics": [
+    {"id": "recent_deploys", "question": "Could a recent deploy, release, or code change be causing or related to this incident?", "topic": "Recent deploys and code changes to {service}, and rollback options"},
+    {"id": "config_flags", "question": "Could a configuration change, feature flag, or rule change be causing this incident?", "topic": "Recent configuration, feature flag, and rule changes affecting {service}"},
+    {"id": "database_health", "question": "Could database availability, failover, or replication be involved in this incident?", "topic": "Database health, failover, and replication status for {service}"},
+    {"id": "capacity", "question": "Could resource capacity (disk, memory, CPU, limits, autoscaling) be involved in this incident?", "topic": "Capacity, resource limits, and scaling behavior of {service}"},
+    {"id": "performance", "question": "Is this incident about slowness or latency where query plans, indexes, or performance tuning should be investigated?", "topic": "Performance profiling, slow queries, and missing indexes in {service}"},
+    {"id": "caching", "question": "Could caching (cache keys, stale or shared cache entries) be involved in this incident?", "topic": "Cache key design and cache invalidation in {service}"},
+    {"id": "third_party", "question": "Could a third-party vendor, payment processor, or external provider be involved in this incident?", "topic": "Third-party and vendor status and integration health for {service}"},
+    {"id": "cloud_provider", "question": "Could a cloud infrastructure provider issue (e.g. AWS region, AZ, storage) be involved in this incident?", "topic": "Cloud provider status and multi-AZ/region resilience for {service}"},
+    {"id": "certs_secrets", "question": "Could an expired or rotated certificate, key, token, or secret be involved in this incident?", "topic": "Certificate, key, and secret expiry/rotation process for {service}"},
+    {"id": "auth_sso", "question": "Is this incident related to authentication, login, SSO, or identity providers?", "topic": "Authentication, SSO/SAML, and identity provider configuration"},
+    {"id": "network_edge", "question": "Could networking, DNS, CDN, load balancers, or WAF rules be involved in this incident?", "topic": "Network, DNS, CDN, and WAF configuration and failover"},
+    {"id": "rate_limiting", "question": "Is this incident related to rate limiting, throttling, or quotas?", "topic": "Rate-limit and quota policy design in {service}"},
+    {"id": "queues_workers", "question": "Could message queues, background workers, or job backlogs be involved in this incident?", "topic": "Queue backlog, worker failures, and retry behavior in {service}"},
+    {"id": "scheduled_jobs", "question": "Could a scheduled job, cron task, or batch process be causing this incident?", "topic": "Scheduled job logic, safeguards, and kill switches for {service}"},
+    {"id": "date_time_logic", "question": "Could date, time, or timezone handling be a cause of this incident?", "topic": "Date, time, and timezone handling bugs in {service}"},
+    {"id": "data_pipeline", "question": "Is this incident related to a data pipeline, ETL, or schema change breaking downstream data?", "topic": "ETL pipeline failures and schema change management for {service}"},
+    {"id": "data_integrity", "question": "Could data have been corrupted, duplicated, lost, or deleted in this incident?", "topic": "Data integrity impact assessment for {service}"},
+    {"id": "backup_restore", "question": "Might data need to be restored from backups or recovered as part of resolving this incident?", "topic": "Backup and restore procedures for {service} data"},
+    {"id": "security_breach", "question": "Could this incident involve a security breach, intrusion, malware, or unauthorized access?", "topic": "Security incident response and forensics for {service}"},
+    {"id": "privacy_compliance", "question": "Could this incident expose personal data or trigger legal, privacy, or regulatory notification obligations?", "topic": "Privacy, compliance, and breach notification obligations (GDPR etc.)"},
+    {"id": "billing_remediation", "question": "Did this incident cause incorrect charges, invoices, or billing that customers need refunded or corrected?", "topic": "Billing correction and refund process for affected customers"},
+    {"id": "mobile_release", "question": "Is this incident related to a mobile app release, crash, or push notifications?", "topic": "Mobile release rollback, staged rollout, and crash analysis for {service}"},
+    {"id": "customer_comms", "question": "Does this incident affect customers enough that status page updates or customer communication are needed?", "topic": "Customer communication and status page messaging"},
+    {"id": "key_account", "question": "Is a specific important or enterprise customer affected in a way that needs account-specific handling?", "topic": "Enterprise customer impact and account-specific escalation"},
+    {"id": "observability_gaps", "question": "Did monitoring or alerting fail to catch this incident early, suggesting observability gaps?", "topic": "Monitoring and alerting gaps for {service} (postmortem)"},
+    {"id": "not_an_incident", "question": "Is this ticket actually not a production incident (e.g. a feature request, cosmetic issue, or misfiled ticket) that should be re-routed?", "topic": "Re-route: not a production incident (backlog / product / support)"}
+  ]
+}

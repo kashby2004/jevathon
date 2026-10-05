@@ -1,0 +1,27 @@
+[project]
+name = "jevathon-backend"
+version = "0.1.0"
+description = "On-call ticket routing orchestrator (see docs/oncall-ticket-routing.md)"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic-settings>=2.4",
+    "httpx>=0.27",
+    "openai>=1.40",          # GMI is OpenAI-compatible
+    "typesafe-sdk>=0.7",     # Jev
+    "detect-secrets>=1.5",
+    "browserbase>=1.20",     # Search + Fetch APIs for research
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+# Standalone Jev eval scripts in scripts/
+scripts = ["python-dotenv>=1.0", "requests>=2.32", "truststore>=0.10"]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
