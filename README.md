@@ -51,7 +51,9 @@ Every external tool has a fake, so the whole pipeline runs end-to-end without an
 
 ## Run locally
 
-Each command runs in its own terminal, from the repo root.
+Anyone can run the whole tool on their own machine; no accounts are needed while every adapter is fake.
+
+**Prerequisites:** Python 3.12+, Node 20+ and git. Each command block below runs in its own terminal, from the repo root.
 
 ```bash
 # Backend (FastAPI on :8000, API docs at /docs)
@@ -79,10 +81,12 @@ Tests: `cd backend && .venv/bin/python -m pytest -q`.
 
 The dashboard is deployed to **https://jevvercel.vercel.app** by `.github/workflows/vercel.deploy.yml` on every push to `main`. **Only the dashboard is hosted.** The backend runs on whoever's laptop is hosting the demo and is exposed through a Cloudflare tunnel, so the dashboard only works while that backend and tunnel are running. Otherwise it shows "Backend unreachable".
 
+Anyone can host the backend (steps 1–2). Steps 3–4 need access to the `jevathon` Vercel team and write access to this repo.
+
 To bring it up:
 
-1. Start the backend (above). In `backend/.env`, `FRONTEND_ORIGINS` must include `https://jevvercel.vercel.app` so the browser is allowed to call it.
-2. Start a tunnel: `brew install cloudflared`, then `cloudflared tunnel --url http://localhost:8000`. It prints an `https://….trycloudflare.com` address.
+1. Start the backend (above). `FRONTEND_ORIGINS` in `backend/.env` must include `https://jevvercel.vercel.app` so the browser is allowed to call it (`.env.example` already does).
+2. Install `cloudflared` ([downloads](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/); `brew install cloudflared` on macOS), then run `cloudflared tunnel --url http://localhost:8000`. It prints an `https://….trycloudflare.com` address. Keep this terminal and the backend running for as long as the dashboard should work.
 3. In Vercel (project `jevvercel` → Settings → Environment Variables), set `VITE_API_URL` to that address. Use type **Config**, not Secret: `VITE_` variables are built into the page, so Vercel won't store them as secrets.
 4. Re-run the deploy workflow. Vercel's own Redeploy button doesn't work, because GitHub builds the site and uploads the finished files. Either use GitHub → Actions → the latest "Deploy Vite React Dashboard to Vercel" run → **Re-run all jobs**, or run:
    ```bash
