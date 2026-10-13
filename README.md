@@ -45,21 +45,57 @@ Jev (TypeSafe) is **decision-only**: it takes a state plus typed questions and r
 | CodeRabbit | Issue plan plus PR review, driven by GitHub comments | Depends on GitHub |
 | Browserbase | Searches and fetches docs for research (Search + Fetch APIs, no browser session) | Real, verified live |
 | Coding agent | Runs the Ralph loop: GMI writes fixes in a git worktree of the target repo, runs its tests, commits | Built and tested with a scripted model; not yet run against live GMI |
-| Dashboard (`frontend/`, Vite + React) | Shows live ticket stages, timelines and degraded-path warnings | Builds; not deployed |
+| Dashboard (`frontend/`, Vite + React) | Shows live ticket stages, timelines and degraded-path warnings | Deployed on Vercel; needs a running backend + tunnel (see **Deployed dashboard**) |
 
-Every external tool has a fake, so the whole pipeline runs end-to-end without any keys (12/12 tests pass). Every fallback is logged at ERROR and shown on the ticket, so nothing degrades silently.
+Every external tool has a fake, so the whole pipeline runs end-to-end without any keys (18/18 tests pass). Every fallback is logged at ERROR and shown on the ticket, so nothing degrades silently.
 
-## Run
+## Run locally
+
+Anyone can run the whole tool on their own machine; no accounts are needed while every adapter is fake.
+
+**Prerequisites:** Python 3.12+, Node 20+ and git. Each command block below runs in its own terminal, from the repo root.
 
 ```bash
+# Backend (FastAPI on :8000, API docs at /docs)
 cd backend && python3 -m venv .venv && .venv/bin/pip install -e '.[dev,scripts]'
-cp .env.example .env                                           # then fill in keys + *_MODE=real
-.venv/bin/uvicorn app.main:app --reload                        # :8000/docs
+cp .env.example .env               # every adapter starts as fake; set *_MODE=real as you add keys
+.venv/bin/uvicorn app.main:app --reload --port 8000
+
+# Dashboard (:5173)
+cd frontend && npm ci && npm run dev
+
+# Photon bridge (:4001), only needed with PHOTON_MODE=real
+cd photon-bridge && npm ci && cp .env.example .env && npm run start
+```
+
+Create a test ticket (simulation endpoints only work with `GITHUB_MODE=fake`):
+
+```bash
 curl -XPOST localhost:8000/simulate/issue -H 'content-type: application/json' \
   -d '{"number":1,"title":"Checkout 500s","body":"prod checkout failing"}'
-cd frontend && npm run dev                                     # :5173
-cd photon-bridge && npm run start                              # :4001, needs photon-bridge/.env
 ```
+
+Tests: `cd backend && .venv/bin/python -m pytest -q`.
+
+## Deployed dashboard
+
+The dashboard is deployed to **https://jevvercel.vercel.app** by `.github/workflows/vercel.deploy.yml` on every push to `main`. **Only the dashboard is hosted.** The backend runs on whoever's laptop is hosting the demo and is exposed through a Cloudflare tunnel, so the dashboard only works while that backend and tunnel are running. Otherwise it shows "Backend unreachable".
+
+Anyone can host the backend (steps 1–2). Steps 3–4 need access to the `jevathon` Vercel team and write access to this repo.
+
+To bring it up:
+
+1. Start the backend (above). `FRONTEND_ORIGINS` in `backend/.env` must include `https://jevvercel.vercel.app` so the browser is allowed to call it (`.env.example` already does).
+2. Install `cloudflared` ([downloads](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/); `brew install cloudflared` on macOS), then run `cloudflared tunnel --url http://localhost:8000`. It prints an `https://….trycloudflare.com` address. Keep this terminal and the backend running for as long as the dashboard should work.
+3. In Vercel (project `jevvercel` → Settings → Environment Variables), set `VITE_API_URL` to that address. Use type **Config**, not Secret: `VITE_` variables are built into the page, so Vercel won't store them as secrets.
+4. Re-run the deploy workflow. Vercel's own Redeploy button doesn't work, because GitHub builds the site and uploads the finished files. Either use GitHub → Actions → the latest "Deploy Vite React Dashboard to Vercel" run → **Re-run all jobs**, or run:
+   ```bash
+   gh run rerun $(gh run list --workflow vercel.deploy.yml -L 1 --json databaseId --jq '.[0].databaseId')
+   ```
+
+A quick tunnel gets a **new address every time it restarts**, so steps 3–4 repeat each time. A named Cloudflare tunnel (free account: `cloudflared tunnel login`, then `cloudflared tunnel create jevathon`) keeps one address.
+
+While the tunnel runs, anyone with its address can reach the backend, including the unauthenticated `/simulate/*` endpoints. Stop the tunnel when you're not demoing.
 
 ### Coding agent (non-severe issues)
 
@@ -89,4 +125,4 @@ Each iteration: GMI picks the files it needs, returns full new contents for the 
 - **In-memory store:** all state is lost on restart. There is no persistence and no dashboard auth.
 - **No eligible devs:** the ticket currently parks in `needs_human`. We haven't decided between paging the on-call lead and queueing it.
 - **Reply matching:** texts carry no ticket id, so a reply is matched to the dev's most recent open ticket. That's ambiguous when a dev has more than one.
-- **Dashboard not deployed:** the Vercel secrets and the Root Directory setting still need to be configured by the repo owner.
+- **Backend isn't hosted:** it runs on a laptop behind a tunnel, so the deployed dashboard is only usable during a demo. Hosting it needs persistence first (the store is in memory) and a sandbox for the coding agent.
